@@ -14,7 +14,7 @@ SHA="$(git rev-parse --short HEAD)"
 TAR="/tmp/conversion-pulse-web.tar.gz"
 REMOTE_DIR="/opt/conversion-pulse-web"
 NODE_PORT="30984"
-SMOKE_URL="http://localhost:${NODE_PORT}/"
+SMOKE_URL="http://localhost:${NODE_PORT}/overview"
 
 if [ -n "$(git status --porcelain)" ]; then
   echo "!! working tree is dirty — commit or stash before deploying" >&2
