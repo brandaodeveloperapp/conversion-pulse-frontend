@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cpulse-web-config
+  namespace: conversion-pulse
+data:
+  NODE_ENV: production
+  PORT: "3000"
+  HOSTNAME: 0.0.0.0
+  API_BASE_URL: http://cpulse-api.conversion-pulse.svc.cluster.local
