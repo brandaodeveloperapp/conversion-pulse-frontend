@@ -8,14 +8,14 @@ interface Props {
 
 export function TotalsCards({ totals, meta }: Props) {
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
       <Card label="Envios" value={asInt(totals.sent)} />
       <Card label="Conversões" value={asInt(totals.converted)} />
       <Card label="Taxa de conversão" value={asPercent(totals.conversionRate)} accent />
       <Card
         label="Consulta"
         value={`${meta.queryMs} ms`}
-        hint={meta.cached ? 'cache' : meta.source}
+        hint={meta.cached ? 'via cache' : meta.source}
       />
     </div>
   );
@@ -33,22 +33,22 @@ function Card({
   accent?: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+    <div className="rounded-lg border border-border-subtle bg-surface p-4 shadow-sm">
+      <p
+        className="font-display text-[0.62rem] font-semibold uppercase text-text-muted"
+        style={{ letterSpacing: 'var(--tracking-nav)' }}
+      >
         {label}
       </p>
       <p
         className={
-          accent
-            ? 'mt-1 text-2xl font-semibold text-indigo-600 dark:text-indigo-400'
-            : 'mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100'
+          (accent ? 'text-primary ' : 'text-text-primary ') +
+          'mt-1.5 font-mono text-2xl font-semibold tabular-nums'
         }
       >
         {value}
       </p>
-      {hint ? (
-        <p className="mt-0.5 text-xs text-slate-400">{hint}</p>
-      ) : null}
+      {hint ? <p className="mt-0.5 text-[0.7rem] text-text-muted">{hint}</p> : null}
     </div>
   );
 }

@@ -39,14 +39,14 @@ export function ConversionChart({ data, channels }: Props) {
             dataKey="period"
             tickFormatter={asDate}
             tick={{ fontSize: 12 }}
-            stroke="currentColor"
-            opacity={0.6}
+            stroke="var(--color-text-muted)"
+            opacity={1}
           />
           <YAxis
             tickFormatter={percentAxis}
             tick={{ fontSize: 12 }}
-            stroke="currentColor"
-            opacity={0.6}
+            stroke="var(--color-text-muted)"
+            opacity={1}
             width={56}
           />
           <Tooltip
@@ -56,10 +56,13 @@ export function ConversionChart({ data, channels }: Props) {
             ]}
             labelFormatter={(label) => asDate(String(label))}
             contentStyle={{
-              borderRadius: 8,
-              border: '1px solid rgba(100,116,139,0.3)',
+              borderRadius: 10,
+              border: '1px solid var(--color-border-subtle)',
+              background: 'var(--color-surface-raised)',
+              color: 'var(--color-text-primary)',
               fontSize: 12,
             }}
+            labelStyle={{ color: 'var(--color-text-secondary)' }}
           />
           <Legend
             formatter={(value: string) => CHANNEL_LABELS[value as Channel] ?? value}

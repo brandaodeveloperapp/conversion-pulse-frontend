@@ -1,5 +1,168 @@
 @import "tailwindcss";
 
 html {
-  color-scheme: light dark;
+  color-scheme: dark;
+}
+
+:root {
+  --color-bg: #1a1a1a;
+  --color-surface: #1e1e1e;
+  --color-surface-raised: #262626;
+
+  --color-border: #6e6e6e;
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+
+  --color-text-primary: #ededed;
+  --color-text-secondary: #b6bcc4;
+  --color-text-muted: #69727d;
+
+  --color-primary: #f28b04;
+  --color-primary-hover: #ff9100;
+  --color-primary-subtle: rgba(242, 139, 4, 0.12);
+  --color-on-primary: #1a1a1a;
+
+  --color-accent: #cc3366;
+  --color-accent-subtle: rgba(204, 51, 102, 0.12);
+  --color-on-accent: #1a1a1a;
+
+  --color-success: #34d399;
+  --color-success-subtle: rgba(52, 211, 153, 0.12);
+  --color-warn: #facc15;
+  --color-warn-subtle: rgba(250, 204, 21, 0.12);
+  --color-danger: #f87171;
+  --color-danger-subtle: rgba(248, 113, 113, 0.12);
+
+  --color-focus-ring: #ff9100;
+
+  --color-chart-email: #f28b04;
+  --color-chart-mobile: #cc3366;
+  --color-chart-wpp: #2dd4bf;
+
+  --font-display: var(--font-sora), "Sora", system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
+  --shadow-focus-glow: 0 0 0 4px rgba(255, 145, 0, 0.25);
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
+
+  --tracking-nav: 0.12em;
+}
+
+@theme inline {
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-surface-raised: var(--color-surface-raised);
+  --color-border: var(--color-border);
+  --color-border-subtle: var(--color-border-subtle);
+
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted: var(--color-text-muted);
+
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-subtle: var(--color-primary-subtle);
+  --color-on-primary: var(--color-on-primary);
+
+  --color-accent: var(--color-accent);
+  --color-accent-subtle: var(--color-accent-subtle);
+  --color-on-accent: var(--color-on-accent);
+
+  --color-success: var(--color-success);
+  --color-success-subtle: var(--color-success-subtle);
+  --color-warn: var(--color-warn);
+  --color-warn-subtle: var(--color-warn-subtle);
+  --color-danger: var(--color-danger);
+  --color-danger-subtle: var(--color-danger-subtle);
+
+  --color-focus-ring: var(--color-focus-ring);
+
+  --color-chart-email: var(--color-chart-email);
+  --color-chart-mobile: var(--color-chart-mobile);
+  --color-chart-wpp: var(--color-chart-wpp);
+
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-full: var(--radius-full);
+
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-focus-glow: var(--shadow-focus-glow);
+
+  --spacing-xs: var(--space-xs);
+  --spacing-sm: var(--space-sm);
+  --spacing-md: var(--space-md);
+  --spacing-lg: var(--space-lg);
+  --spacing-xl: var(--space-xl);
+  --spacing-2xl: var(--space-2xl);
+
+  --tracking-nav: var(--tracking-nav);
+
+  --text-display: 2.5rem;
+  --text-h1: 1.75rem;
+  --text-h2: 1.25rem;
+  --text-body: 0.875rem;
+  --text-caption: 0.75rem;
+  --text-nav: 0.75rem;
+
+  --leading-display: 3rem;
+  --leading-h1: 2.25rem;
+  --leading-h2: 1.75rem;
+  --leading-body: 1.375rem;
+  --leading-caption: 1rem;
+  --leading-nav: 1rem;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 50;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+}
+.skip-link:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-raised);
+  border-radius: 999px;
 }

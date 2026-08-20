@@ -49,7 +49,7 @@ export function pivotByPeriod(series: SeriesPoint[]): PivotRow[] {
 }
 
 export const CHANNEL_COLORS: Record<Channel, string> = {
-  email: '#6366f1',
-  mobile: '#10b981',
-  wpp: '#f59e0b',
+  email: 'var(--color-chart-email)',
+  mobile: 'var(--color-chart-mobile)',
+  wpp: 'var(--color-chart-wpp)',
 };
