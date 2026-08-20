@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { getTranslations } from 'next-intl/server';
 import { SeriesTable } from '@/components/series-table';
 import { EmptyPanel, ErrorPanel, LoadingPanel, PageHeader } from '@/components/panels';
 import { ApiError, fetchTimeseries } from '@/lib/api/client';
@@ -14,13 +15,16 @@ export default async function TablePage({
   searchParams: Promise<SearchParams>;
 }) {
   const filters = parseFilters(await searchParams);
+  const t = await getTranslations('table');
+  const tPanels = await getTranslations('panels');
+
   return (
     <>
-      <PageHeader
-        title="Tabela"
-        subtitle="Todos os pontos do recorte. Volume ao lado da taxa — a taxa sozinha engana no wpp."
-      />
-      <Suspense key={JSON.stringify(filters)} fallback={<LoadingPanel />}>
+      <PageHeader title={t('title')} subtitle={t('subtitle')} />
+      <Suspense
+        key={JSON.stringify(filters)}
+        fallback={<LoadingPanel label={tPanels('loading')} />}
+      >
         <Content filters={filters} />
       </Suspense>
     </>
@@ -28,18 +32,29 @@ export default async function TablePage({
 }
 
 async function Content({ filters }: { filters: ReturnType<typeof parseFilters> }) {
+  const t = await getTranslations('table');
+  const tPanels = await getTranslations('panels');
   let data;
   try {
     data = await fetchTimeseries(filters);
   } catch (error) {
-    return <ErrorPanel status={error instanceof ApiError ? error.status : 0} />;
+    return (
+      <ErrorPanel
+        status={error instanceof ApiError ? error.status : 0}
+        title={tPanels('errorTitle')}
+        badRequestMessage={tPanels('errorBadRequest')}
+        genericMessage={tPanels('errorGeneric')}
+      />
+    );
   }
   if (data.series.length === 0) {
-    return <EmptyPanel message="Nenhum ponto no recorte selecionado." />;
+    return <EmptyPanel message={t('empty')} />;
   }
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-xs text-text-muted">{data.series.length} pontos</p>
+      <p className="text-xs text-text-muted">
+        {t('pointsCount', { count: data.series.length })}
+      </p>
       <SeriesTable series={data.series} />
     </div>
   );

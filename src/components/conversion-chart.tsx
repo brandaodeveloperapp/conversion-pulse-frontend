@@ -10,7 +10,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { CHANNEL_LABELS, type Channel } from '@/lib/api/types';
+import { useLocale, useTranslations } from 'next-intl';
+import { type Channel } from '@/lib/api/types';
 import { asDate, asPercent, CHANNEL_COLORS, type PivotRow } from '@/lib/format';
 
 interface Props {
@@ -22,10 +23,14 @@ const percentAxis = (value: number): string =>
   `${(value * 100).toFixed(1)}%`;
 
 export function ConversionChart({ data, channels }: Props) {
+  const locale = useLocale();
+  const tChannels = useTranslations('channels');
+  const tChart = useTranslations('chart');
+
   if (data.length === 0) {
     return (
       <div className="flex h-80 items-center justify-center rounded-lg border border-dashed border-slate-300 text-slate-500 dark:border-slate-700 dark:text-slate-400">
-        Nenhum ponto no recorte selecionado.
+        {tChart('empty')}
       </div>
     );
   }
@@ -37,7 +42,7 @@ export function ConversionChart({ data, channels }: Props) {
           <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.15} />
           <XAxis
             dataKey="period"
-            tickFormatter={asDate}
+            tickFormatter={(value: string) => asDate(value, locale)}
             tick={{ fontSize: 12 }}
             stroke="#69727d"
           />
@@ -49,10 +54,10 @@ export function ConversionChart({ data, channels }: Props) {
           />
           <Tooltip
             formatter={(value, name) => [
-              asPercent(typeof value === 'number' ? value : null),
-              CHANNEL_LABELS[name as Channel] ?? String(name),
+              asPercent(typeof value === 'number' ? value : null, locale),
+              tChannels(name as Channel) ?? String(name),
             ]}
-            labelFormatter={(label) => asDate(String(label))}
+            labelFormatter={(label) => asDate(String(label), locale)}
             contentStyle={{
               borderRadius: 10,
               border: '1px solid var(--color-border-subtle)',
@@ -63,7 +68,7 @@ export function ConversionChart({ data, channels }: Props) {
             labelStyle={{ color: 'var(--color-text-secondary)' }}
           />
           <Legend
-            formatter={(value: string) => CHANNEL_LABELS[value as Channel] ?? value}
+            formatter={(value: string) => tChannels(value as Channel) ?? value}
           />
           {channels.map((channel) => (
             <Line

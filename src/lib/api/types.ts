@@ -43,18 +43,3 @@ export interface ChannelVolume {
   firstDay: string;
   lastDay: string;
 }
-
-export const STATUS_LABELS: Record<number, string> = {
-  1: 'Válido',
-  2: 'Inválido',
-  3: 'Incompleto',
-  4: 'Pendente',
-  5: 'Aberto',
-  6: 'Visualizou',
-};
-
-export const CHANNEL_LABELS: Record<Channel, string> = {
-  email: 'E-mail',
-  mobile: 'Mobile',
-  wpp: 'WhatsApp',
-};

@@ -2,23 +2,24 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useTransition } from 'react';
-import {
-  CHANNEL_LABELS,
-  STATUS_LABELS,
-  type Channel,
-  type Granularity,
-} from '@/lib/api/types';
+import { useTranslations } from 'next-intl';
+import { type Channel, type Granularity } from '@/lib/api/types';
 import { parseFilters } from '@/lib/api/filters';
 
-const GRANULARITIES: { value: Granularity; label: string }[] = [
-  { value: 'day', label: 'Dia' },
-  { value: 'week', label: 'Semana' },
-  { value: 'month', label: 'Mês' },
-];
+const GRANULARITIES: Granularity[] = ['day', 'week', 'month'];
 const CHANNELS: Channel[] = ['email', 'mobile', 'wpp'];
 const STATUSES = [1, 2, 4, 5, 6];
 
+type StatusKey = '1' | '2' | '3' | '4' | '5' | '6';
+
+function statusKey(status: number): StatusKey {
+  return String(status) as StatusKey;
+}
+
 export function Filters() {
+  const t = useTranslations('filters');
+  const tChannels = useTranslations('channels');
+  const tStatus = useTranslations('status');
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -57,13 +58,13 @@ export function Filters() {
 
   return (
     <div
-      aria-label="Filtros"
+      aria-label={t('ariaLabel')}
       data-pending={pending ? '' : undefined}
       className="flex flex-col gap-5 transition-opacity data-pending:opacity-50"
     >
-      <Group label="Granularidade">
+      <Group label={t('granularity.label')}>
         <div className="flex overflow-hidden rounded-md border border-border-subtle">
-          {GRANULARITIES.map(({ value, label }, i) => (
+          {GRANULARITIES.map((value, i) => (
             <button
               key={value}
               type="button"
@@ -77,14 +78,14 @@ export function Filters() {
                 'flex-1 px-2 py-1.5 text-xs font-medium transition-colors'
               }
             >
-              {label}
+              {t(`granularity.${value}`)}
             </button>
           ))}
         </div>
       </Group>
 
       <Group
-        label="Canais"
+        label={t('channels.label')}
         badge={props.channels.length > 0 ? props.channels.length : undefined}
       >
         <div className="flex flex-wrap gap-1.5">
@@ -94,14 +95,14 @@ export function Filters() {
               active={props.channels.length === 0 || props.channels.includes(channel)}
               onClick={() => toggleCsv('channels', channel, props.channels)}
             >
-              {CHANNEL_LABELS[channel]}
+              {tChannels(channel)}
             </Chip>
           ))}
         </div>
       </Group>
 
       <Group
-        label="Conta como conversão"
+        label={t('conversionStatuses.label')}
         badge={props.conversionStatuses.length}
       >
         <div className="flex flex-wrap gap-1.5">
@@ -118,17 +119,17 @@ export function Filters() {
                 )
               }
             >
-              {STATUS_LABELS[status]}
+              {tStatus(statusKey(status))}
             </Chip>
           ))}
         </div>
       </Group>
 
-      <Group label="Período">
+      <Group label={t('period.label')}>
         <div className="flex items-center gap-2">
           <input
             type="date"
-            aria-label="De"
+            aria-label={t('period.from')}
             defaultValue={props.from ?? ''}
             onChange={(e) =>
               push((next) => {
@@ -141,7 +142,7 @@ export function Filters() {
           <span className="text-text-muted">—</span>
           <input
             type="date"
-            aria-label="Até"
+            aria-label={t('period.to')}
             defaultValue={props.to ?? ''}
             onChange={(e) =>
               push((next) => {

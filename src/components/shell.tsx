@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Brand } from './brand';
 
 export function Shell({
@@ -11,6 +12,7 @@ export function Shell({
   sidebar: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const t = useTranslations('shell');
   const pathname = usePathname();
   const [openedAt, setOpenedAt] = useState<string | null>(null);
   const open = openedAt !== null && openedAt === pathname;
@@ -25,7 +27,7 @@ export function Shell({
   return (
     <div className="min-h-screen">
       <a href="#conteudo" className="skip-link">
-        Pular para o conteúdo
+        {t('skipToContent')}
       </a>
 
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-border-subtle bg-surface lg:block">
@@ -35,7 +37,7 @@ export function Shell({
       <div className="sticky top-0 z-20 flex items-center gap-3 border-b border-border-subtle bg-surface px-4 py-3 lg:hidden">
         <button
           type="button"
-          aria-label="Abrir menu"
+          aria-label={t('openMenu')}
           aria-expanded={open}
           onClick={() => setOpenedAt(pathname)}
           className="rounded-md p-1.5 text-text-secondary hover:bg-surface-raised"
@@ -50,7 +52,7 @@ export function Shell({
       {open ? (
         <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true">
           <button
-            aria-label="Fechar menu"
+            aria-label={t('closeMenu')}
             onClick={close}
             className="absolute inset-0 bg-black/60"
           />

@@ -1,0 +1,136 @@
+{
+  "metadata": {
+    "title": "Conversion Pulse",
+    "description": "Evolução temporal da taxa de conversão por canal sobre 9,5M de envios."
+  },
+  "shell": {
+    "skipToContent": "Pular para o conteúdo",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu"
+  },
+  "nav": {
+    "ariaLabel": "Navegação principal",
+    "items": {
+      "overview": { "label": "Visão geral", "hint": "KPIs, série e tabela" },
+      "channels": { "label": "Por canal", "hint": "Cada canal no seu eixo" },
+      "table": { "label": "Tabela", "hint": "Todos os pontos" },
+      "compare": { "label": "Comparação", "hint": "Dois recortes lado a lado" },
+      "about": { "label": "Sobre os dados", "hint": "O que a série significa" }
+    }
+  },
+  "filters": {
+    "ariaLabel": "Filtros",
+    "granularity": {
+      "label": "Granularidade",
+      "day": "Dia",
+      "week": "Semana",
+      "month": "Mês"
+    },
+    "channels": { "label": "Canais" },
+    "conversionStatuses": { "label": "Conta como conversão" },
+    "period": { "label": "Período", "from": "De", "to": "Até" }
+  },
+  "channels": {
+    "email": "E-mail",
+    "mobile": "Mobile",
+    "wpp": "WhatsApp"
+  },
+  "status": {
+    "1": "Válido",
+    "2": "Inválido",
+    "3": "Incompleto",
+    "4": "Pendente",
+    "5": "Aberto",
+    "6": "Visualizou"
+  },
+  "sidebarFooter": {
+    "clearFilters": "Limpar filtros",
+    "copyLink": "Copiar link",
+    "linkCopied": "Link copiado"
+  },
+  "languageSwitcher": {
+    "label": "Idioma",
+    "pt": "PT",
+    "en": "EN"
+  },
+  "panels": {
+    "loading": "Carregando…",
+    "errorTitle": "Não foi possível carregar os dados.",
+    "errorBadRequest": "Recorte inválido — ajuste os filtros.",
+    "errorGeneric": "A API não respondeu. Tente novamente."
+  },
+  "totalsCards": {
+    "sent": "Envios",
+    "converted": "Conversões",
+    "rate": "Taxa de conversão",
+    "query": "Consulta",
+    "viaCache": "via cache"
+  },
+  "chart": {
+    "empty": "Nenhum ponto no recorte selecionado.",
+    "tooltipRate": "Taxa"
+  },
+  "seriesTable": {
+    "period": "Período",
+    "channel": "Canal",
+    "sent": "Envios",
+    "converted": "Conversões",
+    "delivered": "Entregues",
+    "rate": "Taxa"
+  },
+  "overview": {
+    "title": "Visão geral",
+    "subtitle": "Evolução da taxa de conversão por canal sobre 9,5M de envios.",
+    "chartTitle": "Taxa de conversão — {channels}",
+    "chartCaption": "Um dia sem envio não tem taxa: a linha corta, não cai a zero.",
+    "firstPoints": "Primeiros pontos",
+    "viewFullTable": "Ver tabela completa →"
+  },
+  "channelsView": {
+    "title": "Por canal",
+    "subtitle": "Cada canal no próprio eixo. Num eixo compartilhado, os milhares do wpp somem sob os milhões do e-mail.",
+    "empty": "Nenhum canal no recorte.",
+    "kpiSent": "Envios",
+    "kpiConverted": "Conversões",
+    "kpiRate": "Taxa"
+  },
+  "table": {
+    "title": "Tabela",
+    "subtitle": "Todos os pontos do recorte. Volume ao lado da taxa — a taxa sozinha engana no wpp.",
+    "empty": "Nenhum ponto no recorte selecionado.",
+    "pointsCount": "{count, plural, one {# ponto} other {# pontos}}"
+  },
+  "compare": {
+    "title": "Comparação",
+    "subtitle": "Dois conjuntos de status lado a lado. Status 1 dá ~0,30%; somar 5 (Aberto) salta pra ~1,5%.",
+    "panelA": "Recorte A",
+    "panelB": "Recorte B"
+  },
+  "about": {
+    "title": "Sobre os dados",
+    "subtitle": "O que a série mostra, e o que ela deliberadamente não esconde.",
+    "documentTitle": "Sobre os dados — Conversion Pulse",
+    "notes": {
+      "scale": {
+        "title": "9,5 milhões de linhas, resposta em milissegundos",
+        "body": "A rota agrega uma tabela de fatos de 9.525.993 envios. A resposta vem de uma view materializada (rollup dia × canal), então a mesma pergunta que custaria ~2s varrendo o fato sai em fração de milissegundo. O selo “via cache” ou “conversion_daily” nos KPIs diz de onde veio."
+      },
+      "nullRate": {
+        "title": "Um dia sem envio não tem taxa — não é zero",
+        "body": "Divisão por zero devolve <code>null</code>, não 0. No gráfico a linha corta; um zero falso pareceria uma queda de desempenho que nunca existiu."
+      },
+      "rateAlone": {
+        "title": "A taxa sozinha mente sobre o wpp",
+        "body": "O e-mail manda milhões, o wpp manda milhares. Uma taxa de 100% sobre dois envios não é vitória. Por isso envios e conversões viajam ao lado da taxa em toda linha, e a view “Por canal” dá a cada canal o próprio eixo."
+      },
+      "status3": {
+        "title": "O status 3 (Incompleto) não existe nos dados",
+        "body": "O enunciado lista seis status; o dump usa cinco. Por isso ele não aparece entre os filtros de conversão."
+      },
+      "createdAt": {
+        "title": "O campo created_at é sintético e determinístico",
+        "body": "O dump não tem coluna temporal. O created_at é gerado pela posição ordinal do id através de uma curva de sazonalidade — sem random, o mesmo dump gera sempre as mesmas datas."
+      }
+    }
+  }
+}

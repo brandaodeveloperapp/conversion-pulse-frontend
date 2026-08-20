@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { ConversionChart } from '@/components/conversion-chart';
 import { CompareStatus } from '@/components/compare-status';
 import { ErrorPanel, LoadingPanel, PageHeader } from '@/components/panels';
@@ -30,21 +31,26 @@ export default async function ComparePage({
   const base = parseFilters(params);
   const a = statuses(params.statusesA, [1]);
   const b = statuses(params.statusesB, [1, 5]);
+  const t = await getTranslations('compare');
+  const tPanels = await getTranslations('panels');
 
   return (
     <>
-      <PageHeader
-        title="Comparação"
-        subtitle="Dois conjuntos de status lado a lado. Status 1 dá ~0,30%; somar 5 (Aberto) salta pra ~1,5%."
-      />
+      <PageHeader title={t('title')} subtitle={t('subtitle')} />
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Panel title="Recorte A" paramKey="statusesA" selected={a}>
-          <Suspense key={`a-${JSON.stringify({ base, a })}`} fallback={<LoadingPanel />}>
+        <Panel title={t('panelA')} paramKey="statusesA" selected={a}>
+          <Suspense
+            key={`a-${JSON.stringify({ base, a })}`}
+            fallback={<LoadingPanel label={tPanels('loading')} />}
+          >
             <ChartFor filters={{ ...base, conversionStatuses: a }} />
           </Suspense>
         </Panel>
-        <Panel title="Recorte B" paramKey="statusesB" selected={b}>
-          <Suspense key={`b-${JSON.stringify({ base, b })}`} fallback={<LoadingPanel />}>
+        <Panel title={t('panelB')} paramKey="statusesB" selected={b}>
+          <Suspense
+            key={`b-${JSON.stringify({ base, b })}`}
+            fallback={<LoadingPanel label={tPanels('loading')} />}
+          >
             <ChartFor filters={{ ...base, conversionStatuses: b }} />
           </Suspense>
         </Panel>
@@ -76,18 +82,27 @@ function Panel({
 }
 
 async function ChartFor({ filters }: { filters: ReturnType<typeof parseFilters> }) {
+  const tPanels = await getTranslations('panels');
+  const locale = await getLocale();
   let data;
   try {
     data = await fetchTimeseries(filters);
   } catch (error) {
-    return <ErrorPanel status={error instanceof ApiError ? error.status : 0} />;
+    return (
+      <ErrorPanel
+        status={error instanceof ApiError ? error.status : 0}
+        title={tPanels('errorTitle')}
+        badRequestMessage={tPanels('errorBadRequest')}
+        genericMessage={tPanels('errorGeneric')}
+      />
+    );
   }
   const active: Channel[] =
     filters.channels.length > 0 ? filters.channels : data.meta.channels;
   return (
     <div className="flex flex-col gap-3">
       <p className="font-mono text-2xl font-semibold tabular-nums text-primary">
-        {asPercent(data.totals.conversionRate)}
+        {asPercent(data.totals.conversionRate, locale)}
       </p>
       <ConversionChart data={pivotByPeriod(data.series)} channels={active} />
     </div>

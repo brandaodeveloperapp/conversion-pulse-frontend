@@ -1,3 +1,4 @@
+import { getLocale, getTranslations } from 'next-intl/server';
 import type { TimeseriesMeta, TimeseriesTotals } from '@/lib/api/types';
 import { asInt, asPercent } from '@/lib/format';
 
@@ -6,16 +7,23 @@ interface Props {
   meta: TimeseriesMeta;
 }
 
-export function TotalsCards({ totals, meta }: Props) {
+export async function TotalsCards({ totals, meta }: Props) {
+  const t = await getTranslations('totalsCards');
+  const locale = await getLocale();
+
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-      <Card label="Envios" value={asInt(totals.sent)} />
-      <Card label="Conversões" value={asInt(totals.converted)} />
-      <Card label="Taxa de conversão" value={asPercent(totals.conversionRate)} accent />
+      <Card label={t('sent')} value={asInt(totals.sent, locale)} />
+      <Card label={t('converted')} value={asInt(totals.converted, locale)} />
       <Card
-        label="Consulta"
+        label={t('rate')}
+        value={asPercent(totals.conversionRate, locale)}
+        accent
+      />
+      <Card
+        label={t('query')}
         value={`${meta.queryMs} ms`}
-        hint={meta.cached ? 'via cache' : meta.source}
+        hint={meta.cached ? t('viaCache') : meta.source}
       />
     </div>
   );

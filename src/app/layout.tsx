@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { Sora, Inter, IBM_Plex_Mono } from 'next/font/google';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getTranslations } from 'next-intl/server';
 import './globals.css';
 
 const sora = Sora({
@@ -22,22 +24,25 @@ const plexMono = IBM_Plex_Mono({
   display: 'swap',
 });
 
-export const metadata: Metadata = {
-  title: 'Conversion Pulse',
-  description:
-    'Evolução temporal da taxa de conversão por canal sobre 9,5M de envios.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('metadata');
+  return {
+    title: t('title'),
+    description: t('description'),
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getLocale();
   return (
     <html
-      lang="pt-BR"
+      lang={locale}
       className={`${sora.variable} ${inter.variable} ${plexMono.variable}`}
     >
       <body className="min-h-screen bg-bg text-text-primary antialiased">
-        {children}
+        <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>
   );

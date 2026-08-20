@@ -1,9 +1,10 @@
 import { Suspense } from 'react';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { ChannelMiniChart } from '@/components/channel-mini-chart';
 import { EmptyPanel, ErrorPanel, LoadingPanel, PageHeader } from '@/components/panels';
 import { ApiError, fetchTimeseries } from '@/lib/api/client';
 import { parseFilters } from '@/lib/api/filters';
-import { CHANNEL_LABELS, type Channel, type SeriesPoint } from '@/lib/api/types';
+import { type Channel, type SeriesPoint } from '@/lib/api/types';
 import { asInt, asPercent, CHANNEL_COLORS } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
@@ -16,13 +17,16 @@ export default async function ChannelsPage({
   searchParams: Promise<SearchParams>;
 }) {
   const filters = parseFilters(await searchParams);
+  const t = await getTranslations('channelsView');
+  const tPanels = await getTranslations('panels');
+
   return (
     <>
-      <PageHeader
-        title="Por canal"
-        subtitle="Cada canal no próprio eixo. Num eixo compartilhado, os milhares do wpp somem sob os milhões do e-mail."
-      />
-      <Suspense key={JSON.stringify(filters)} fallback={<LoadingPanel />}>
+      <PageHeader title={t('title')} subtitle={t('subtitle')} />
+      <Suspense
+        key={JSON.stringify(filters)}
+        fallback={<LoadingPanel label={tPanels('loading')} />}
+      >
         <Content filters={filters} />
       </Suspense>
     </>
@@ -37,16 +41,27 @@ function summarise(series: SeriesPoint[]) {
 }
 
 async function Content({ filters }: { filters: ReturnType<typeof parseFilters> }) {
+  const t = await getTranslations('channelsView');
+  const tPanels = await getTranslations('panels');
+  const tChannels = await getTranslations('channels');
+  const locale = await getLocale();
   let data;
   try {
     data = await fetchTimeseries(filters);
   } catch (error) {
-    return <ErrorPanel status={error instanceof ApiError ? error.status : 0} />;
+    return (
+      <ErrorPanel
+        status={error instanceof ApiError ? error.status : 0}
+        title={tPanels('errorTitle')}
+        badRequestMessage={tPanels('errorBadRequest')}
+        genericMessage={tPanels('errorGeneric')}
+      />
+    );
   }
   const channels: Channel[] =
     filters.channels.length > 0 ? filters.channels : data.meta.channels;
   if (channels.length === 0) {
-    return <EmptyPanel message="Nenhum canal no recorte." />;
+    return <EmptyPanel message={t('empty')} />;
   }
 
   return (
@@ -70,14 +85,14 @@ async function Content({ filters }: { filters: ReturnType<typeof parseFilters> }
                 style={{ backgroundColor: color }}
               />
               <h2 className="font-display text-sm font-semibold text-text-primary">
-                {CHANNEL_LABELS[channel]}
+                {tChannels(channel)}
               </h2>
             </header>
             <ChannelMiniChart data={points} color={color} gradientId={`grad-${channel}`} />
             <dl className="grid grid-cols-3 gap-2">
-              <Kpi label="Envios" value={asInt(totals.sent)} />
-              <Kpi label="Conversões" value={asInt(totals.converted)} />
-              <Kpi label="Taxa" value={asPercent(totals.rate)} accent />
+              <Kpi label={t('kpiSent')} value={asInt(totals.sent, locale)} />
+              <Kpi label={t('kpiConverted')} value={asInt(totals.converted, locale)} />
+              <Kpi label={t('kpiRate')} value={asPercent(totals.rate, locale)} accent />
             </dl>
           </article>
         );

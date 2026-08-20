@@ -1,24 +1,57 @@
 import type { Channel, SeriesPoint } from './api/types';
 
-const percentFmt = new Intl.NumberFormat('pt-BR', {
-  style: 'percent',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+const percentFmtCache = new Map<string, Intl.NumberFormat>();
+const intFmtCache = new Map<string, Intl.NumberFormat>();
+const dateFmtCache = new Map<string, Intl.DateTimeFormat>();
 
-const intFmt = new Intl.NumberFormat('pt-BR');
-
-export function asPercent(rate: number | null): string {
-  return rate === null ? '—' : percentFmt.format(rate);
+function percentFmt(locale: string): Intl.NumberFormat {
+  let fmt = percentFmtCache.get(locale);
+  if (!fmt) {
+    fmt = new Intl.NumberFormat(locale, {
+      style: 'percent',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    percentFmtCache.set(locale, fmt);
+  }
+  return fmt;
 }
 
-export function asInt(value: number): string {
-  return intFmt.format(value);
+function intFmt(locale: string): Intl.NumberFormat {
+  let fmt = intFmtCache.get(locale);
+  if (!fmt) {
+    fmt = new Intl.NumberFormat(locale);
+    intFmtCache.set(locale, fmt);
+  }
+  return fmt;
 }
 
-export function asDate(iso: string): string {
+function dateFmt(locale: string): Intl.DateTimeFormat {
+  let fmt = dateFmtCache.get(locale);
+  if (!fmt) {
+    fmt = new Intl.DateTimeFormat(locale, {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      timeZone: 'UTC',
+    });
+    dateFmtCache.set(locale, fmt);
+  }
+  return fmt;
+}
+
+export function asPercent(rate: number | null, locale = 'pt-BR'): string {
+  return rate === null ? '—' : percentFmt(locale).format(rate);
+}
+
+export function asInt(value: number, locale = 'pt-BR'): string {
+  return intFmt(locale).format(value);
+}
+
+export function asDate(iso: string, locale = 'pt-BR'): string {
   const [year, month, day] = iso.split('-');
-  return `${day}/${month}/${year}`;
+  const date = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+  return dateFmt(locale).format(date);
 }
 
 export interface PivotRow {

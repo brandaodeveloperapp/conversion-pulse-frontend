@@ -34,6 +34,24 @@ describe('asInt / asDate', () => {
   });
 });
 
+describe('locale-aware formatting', () => {
+  it('formats pt-BR with dot thousands, comma decimals and dd/mm/yyyy', () => {
+    expect(asInt(9525993, 'pt-BR')).toBe('9.525.993');
+    expect(asPercent(0.002988, 'pt-BR')).toBe('0,30%');
+    expect(asDate('2024-03-31', 'pt-BR')).toBe('31/03/2024');
+  });
+
+  it('formats en with comma thousands, dot decimals and mm/dd/yyyy', () => {
+    expect(asInt(9525993, 'en')).toBe('9,525,993');
+    expect(asPercent(0.002988, 'en')).toBe('0.30%');
+    expect(asDate('2024-03-31', 'en')).toBe('03/31/2024');
+  });
+
+  it('keeps the null-rate dash independent of locale', () => {
+    expect(asPercent(null, 'en')).toBe('—');
+  });
+});
+
 describe('pivotByPeriod', () => {
   it('collapses per-channel rows into one row per period', () => {
     const rows = pivotByPeriod([

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { NAV_ITEMS } from '@/lib/nav-items';
 
 const ICONS: Record<string, React.ReactNode> = {
@@ -36,12 +37,13 @@ const ICONS: Record<string, React.ReactNode> = {
 };
 
 export function Nav({ onNavigate }: { onNavigate?: () => void }) {
+  const t = useTranslations('nav');
   const pathname = usePathname();
   const params = useSearchParams();
   const query = params.toString();
 
   return (
-    <nav aria-label="Navegação principal" className="flex flex-col gap-1">
+    <nav aria-label={t('ariaLabel')} className="flex flex-col gap-1">
       {NAV_ITEMS.map((item) => {
         const active = pathname === item.href;
         return (
@@ -77,8 +79,10 @@ export function Nav({ onNavigate }: { onNavigate?: () => void }) {
               {ICONS[item.href]}
             </svg>
             <span className="flex flex-col">
-              <span>{item.label}</span>
-              <span className="text-[0.68rem] text-text-muted">{item.hint}</span>
+              <span>{t(`items.${item.key}.label`)}</span>
+              <span className="text-[0.68rem] text-text-muted">
+                {t(`items.${item.key}.hint`)}
+              </span>
             </span>
           </Link>
         );

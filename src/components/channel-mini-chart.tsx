@@ -7,6 +7,7 @@ import {
   Tooltip,
   YAxis,
 } from 'recharts';
+import { useLocale, useTranslations } from 'next-intl';
 import { asDate, asPercent } from '@/lib/format';
 
 interface Point {
@@ -23,6 +24,9 @@ export function ChannelMiniChart({
   color: string;
   gradientId: string;
 }) {
+  const locale = useLocale();
+  const tChart = useTranslations('chart');
+
   return (
     <div className="h-28 w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -36,10 +40,10 @@ export function ChannelMiniChart({
           <YAxis hide domain={['auto', 'auto']} />
           <Tooltip
             formatter={(value) => [
-              asPercent(typeof value === 'number' ? value : null),
-              'Taxa',
+              asPercent(typeof value === 'number' ? value : null, locale),
+              tChart('tooltipRate'),
             ]}
-            labelFormatter={(label) => asDate(String(label))}
+            labelFormatter={(label) => asDate(String(label), locale)}
             contentStyle={{
               borderRadius: 10,
               border: '1px solid var(--color-border-subtle)',

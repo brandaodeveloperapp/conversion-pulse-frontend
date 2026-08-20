@@ -15,25 +15,33 @@ export function PageHeader({
   );
 }
 
-export function LoadingPanel() {
+export function LoadingPanel({ label }: { label: string }) {
   return (
     <div className="flex h-96 items-center justify-center rounded-lg border border-border-subtle bg-surface text-text-muted">
       <span className="inline-flex items-center gap-2">
         <span className="h-2 w-2 animate-ping rounded-full bg-primary" />
-        Carregando…
+        {label}
       </span>
     </div>
   );
 }
 
-export function ErrorPanel({ status }: { status: number }) {
+export function ErrorPanel({
+  status,
+  title,
+  badRequestMessage,
+  genericMessage,
+}: {
+  status: number;
+  title: string;
+  badRequestMessage: string;
+  genericMessage: string;
+}) {
   return (
     <div className="flex h-40 flex-col items-center justify-center gap-1 rounded-lg border border-danger-subtle bg-danger-subtle text-danger">
-      <p className="font-medium">Não foi possível carregar os dados.</p>
+      <p className="font-medium">{title}</p>
       <p className="text-sm">
-        {status === 400
-          ? 'Recorte inválido — ajuste os filtros.'
-          : 'A API não respondeu. Tente novamente.'}
+        {status === 400 ? badRequestMessage : genericMessage}
       </p>
     </div>
   );

@@ -1,0 +1,136 @@
+{
+  "metadata": {
+    "title": "Conversion Pulse",
+    "description": "Conversion rate trend by channel across 9.5M deliveries."
+  },
+  "shell": {
+    "skipToContent": "Skip to content",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "nav": {
+    "ariaLabel": "Main navigation",
+    "items": {
+      "overview": { "label": "Overview", "hint": "KPIs, series and table" },
+      "channels": { "label": "By channel", "hint": "Each channel on its own axis" },
+      "table": { "label": "Table", "hint": "Every point" },
+      "compare": { "label": "Compare", "hint": "Two slices side by side" },
+      "about": { "label": "About the data", "hint": "What the series means" }
+    }
+  },
+  "filters": {
+    "ariaLabel": "Filters",
+    "granularity": {
+      "label": "Granularity",
+      "day": "Day",
+      "week": "Week",
+      "month": "Month"
+    },
+    "channels": { "label": "Channels" },
+    "conversionStatuses": { "label": "Counts as conversion" },
+    "period": { "label": "Period", "from": "From", "to": "To" }
+  },
+  "channels": {
+    "email": "Email",
+    "mobile": "Mobile",
+    "wpp": "WhatsApp"
+  },
+  "status": {
+    "1": "Valid",
+    "2": "Invalid",
+    "3": "Incomplete",
+    "4": "Pending",
+    "5": "Opened",
+    "6": "Viewed"
+  },
+  "sidebarFooter": {
+    "clearFilters": "Clear filters",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied"
+  },
+  "languageSwitcher": {
+    "label": "Language",
+    "pt": "PT",
+    "en": "EN"
+  },
+  "panels": {
+    "loading": "Loading…",
+    "errorTitle": "Could not load the data.",
+    "errorBadRequest": "Invalid slice — adjust the filters.",
+    "errorGeneric": "The API did not respond. Try again."
+  },
+  "totalsCards": {
+    "sent": "Sent",
+    "converted": "Converted",
+    "rate": "Conversion rate",
+    "query": "Query",
+    "viaCache": "via cache"
+  },
+  "chart": {
+    "empty": "No points in the selected slice.",
+    "tooltipRate": "Rate"
+  },
+  "seriesTable": {
+    "period": "Period",
+    "channel": "Channel",
+    "sent": "Sent",
+    "converted": "Converted",
+    "delivered": "Delivered",
+    "rate": "Rate"
+  },
+  "overview": {
+    "title": "Overview",
+    "subtitle": "Conversion rate trend by channel across 9.5M deliveries.",
+    "chartTitle": "Conversion rate — {channels}",
+    "chartCaption": "A day with no sends has no rate: the line breaks, it does not drop to zero.",
+    "firstPoints": "First points",
+    "viewFullTable": "View full table →"
+  },
+  "channelsView": {
+    "title": "By channel",
+    "subtitle": "Each channel on its own axis. On a shared axis, WhatsApp’s thousands vanish under email’s millions.",
+    "empty": "No channels in this slice.",
+    "kpiSent": "Sent",
+    "kpiConverted": "Converted",
+    "kpiRate": "Rate"
+  },
+  "table": {
+    "title": "Table",
+    "subtitle": "Every point in the slice. Volume travels next to the rate — the rate alone is misleading on WhatsApp.",
+    "empty": "No points in the selected slice.",
+    "pointsCount": "{count, plural, one {# point} other {# points}}"
+  },
+  "compare": {
+    "title": "Compare",
+    "subtitle": "Two status sets side by side. Status 1 alone yields ~0.30%; adding 5 (Opened) jumps to ~1.5%.",
+    "panelA": "Slice A",
+    "panelB": "Slice B"
+  },
+  "about": {
+    "title": "About the data",
+    "subtitle": "What the series shows, and what it deliberately does not hide.",
+    "documentTitle": "About the data — Conversion Pulse",
+    "notes": {
+      "scale": {
+        "title": "9.5 million rows, millisecond responses",
+        "body": "The route aggregates a fact table of 9,525,993 deliveries. The response comes from a materialized view (day × channel rollup), so the same query that would cost ~2s scanning the fact table returns in a fraction of a millisecond. The “via cache” or “conversion_daily” tag on the KPIs shows where it came from."
+      },
+      "nullRate": {
+        "title": "A day with no sends has no rate — it is not zero",
+        "body": "Division by zero returns <code>null</code>, not 0. On the chart the line breaks; a false zero would look like a drop in performance that never happened."
+      },
+      "rateAlone": {
+        "title": "The rate alone lies about WhatsApp",
+        "body": "Email sends millions, WhatsApp sends thousands. A 100% rate on two sends is not a win. That is why sent and converted travel next to the rate on every row, and the “By channel” view gives each channel its own axis."
+      },
+      "status3": {
+        "title": "Status 3 (Incomplete) does not exist in the data",
+        "body": "The spec lists six statuses; the dump ships five. That is why it does not appear among the conversion filters."
+      },
+      "createdAt": {
+        "title": "The created_at field is synthetic and deterministic",
+        "body": "The dump has no timestamp column. created_at is generated from the id’s ordinal position through a seasonality curve — no randomness, the same dump always produces the same dates."
+      }
+    }
+  }
+}

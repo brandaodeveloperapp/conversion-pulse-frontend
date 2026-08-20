@@ -2,9 +2,15 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useTransition } from 'react';
-import { STATUS_LABELS } from '@/lib/api/types';
+import { useTranslations } from 'next-intl';
 
 const STATUSES = [1, 2, 4, 5, 6];
+
+type StatusKey = '1' | '2' | '3' | '4' | '5' | '6';
+
+function statusKey(status: number): StatusKey {
+  return String(status) as StatusKey;
+}
 
 export function CompareStatus({
   paramKey,
@@ -13,6 +19,7 @@ export function CompareStatus({
   paramKey: string;
   selected: number[];
 }) {
+  const tStatus = useTranslations('status');
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -47,7 +54,7 @@ export function CompareStatus({
               : 'rounded-full border border-border-subtle px-2.5 py-1 text-xs text-text-secondary transition-colors hover:border-primary hover:text-text-primary'
           }
         >
-          {STATUS_LABELS[status]}
+          {tStatus(statusKey(status))}
         </button>
       ))}
     </div>

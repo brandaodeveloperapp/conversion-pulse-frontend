@@ -1,13 +1,14 @@
+export type NavKey = 'overview' | 'channels' | 'table' | 'compare' | 'about';
+
 export interface NavItem {
   href: string;
-  label: string;
-  hint: string;
+  key: NavKey;
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  { href: '/overview', label: 'Visão geral', hint: 'KPIs, série e tabela' },
-  { href: '/channels', label: 'Por canal', hint: 'Cada canal no seu eixo' },
-  { href: '/table', label: 'Tabela', hint: 'Todos os pontos' },
-  { href: '/compare', label: 'Comparação', hint: 'Dois recortes lado a lado' },
-  { href: '/about', label: 'Sobre os dados', hint: 'O que a série significa' },
+  { href: '/overview', key: 'overview' },
+  { href: '/channels', key: 'channels' },
+  { href: '/table', key: 'table' },
+  { href: '/compare', key: 'compare' },
+  { href: '/about', key: 'about' },
 ];
