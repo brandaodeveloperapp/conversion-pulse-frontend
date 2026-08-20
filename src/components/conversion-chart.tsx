@@ -39,14 +39,12 @@ export function ConversionChart({ data, channels }: Props) {
             dataKey="period"
             tickFormatter={asDate}
             tick={{ fontSize: 12 }}
-            stroke="var(--color-text-muted)"
-            opacity={1}
+            stroke="#69727d"
           />
           <YAxis
             tickFormatter={percentAxis}
             tick={{ fontSize: 12 }}
-            stroke="var(--color-text-muted)"
-            opacity={1}
+            stroke="#69727d"
             width={56}
           />
           <Tooltip
