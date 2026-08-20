@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Conversion Pulse — Dashboard
 
-## Getting Started
+Frontend do desafio Tech Lead da Ilumeo. Dashboard da evolução temporal da taxa
+de conversão por canal, consumindo a
+[API](https://conversion-pulse.brandaodeveloper.com.br) que serve o rollup sobre
+9,5M de envios.
 
-First, run the development server:
+Backend: [`conversion-pulse-backend`](https://github.com/brandaodeveloperapp/conversion-pulse-backend).
+
+## Decisão central: busca no servidor
+
+Next.js App Router com **Server Components**. Os filtros vivem na URL
+(`searchParams`); ao mudar um filtro, o servidor re-busca e re-renderiza — o
+browser nunca chama a API direto.
+
+Isso não é detalhe de implementação, é o que encaixa na decisão de segurança do
+backend: a API tem **CORS trancado** (nega qualquer origem), justamente porque
+um dashboard não precisa de CORS quando busca do lado servidor. E como cada
+recorte é uma URL, um link compartilhado reproduz a visão exata.
+
+Em produção o server component busca pelo Service interno do cluster
+(`http://cpulse-api.conversion-pulse.svc.cluster.local`) — sem TLS, sem CORS,
+sem sair da rede do k3s.
+
+## O que a UI mostra
+
+- **Linha por canal** da taxa de conversão ao longo do tempo. Um dia sem envio
+  **corta a linha**, não cai a zero — reflete o `null` que a API devolve para
+  denominador zero.
+- **KPIs**: envios, conversões, taxa global e o tempo da consulta (com selo de
+  cache/rollup).
+- **Tabela** com envios, conversões e entregues ao lado da taxa em cada linha —
+  porque a taxa sozinha esconde que o wpp manda milhares contra milhões do
+  email; 100% sobre dois envios não é vitória.
+
+## Filtros
+
+Granularidade (dia/semana/mês), canais, o que conta como conversão (status) e
+período. O status 3 (Incompleto) não aparece: não existe nos dados.
+
+## Rodar
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev          # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Aponta para a API pública por padrão. Para outra origem:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+API_BASE_URL=http://localhost:3000 npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Qualidade
 
-## Learn More
+```bash
+npm test             # 13 testes (parse de filtros, pivô, formatação)
+npm run build        # build de produção (output standalone)
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Next.js 16 · React 19 · TypeScript strict · Recharts · Tailwind · Docker
+(standalone) · k3s. Deploy pelo mesmo pipeline do backend: build da imagem,
+`docker save` por SSH, import no containerd, `kubectl apply`.

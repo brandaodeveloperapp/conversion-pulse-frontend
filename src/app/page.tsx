@@ -1,69 +1,102 @@
-import Image from "next/image";
+import { Suspense } from 'react';
+import { Filters } from '@/components/filters';
+import { ConversionChart } from '@/components/conversion-chart';
+import { SeriesTable } from '@/components/series-table';
+import { TotalsCards } from '@/components/totals-cards';
+import { ApiError, fetchTimeseries } from '@/lib/api/client';
+import { parseFilters } from '@/lib/api/filters';
+import { CHANNEL_LABELS, type Channel } from '@/lib/api/types';
+import { pivotByPeriod } from '@/lib/format';
 
-export default function Home() {
+export const dynamic = 'force-dynamic';
+
+type SearchParams = Record<string, string | string[] | undefined>;
+
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const filters = parseFilters(await searchParams);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <main className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-8 sm:py-12">
+      <header className="flex flex-col gap-1">
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
+          Conversion Pulse
+        </h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          Evolução temporal da taxa de conversão por canal sobre 9,5M de envios.
+        </p>
+      </header>
+
+      <Filters
+        granularity={filters.granularity}
+        channels={filters.channels}
+        conversionStatuses={filters.conversionStatuses}
+        from={filters.from}
+        to={filters.to}
+      />
+
+      <Suspense fallback={<LoadingPanel />} key={JSON.stringify(filters)}>
+        <Dashboard filters={filters} />
+      </Suspense>
+    </main>
+  );
+}
+
+async function Dashboard({
+  filters,
+}: {
+  filters: ReturnType<typeof parseFilters>;
+}) {
+  let data;
+  try {
+    data = await fetchTimeseries(filters);
+  } catch (error) {
+    return <ErrorPanel status={error instanceof ApiError ? error.status : 0} />;
+  }
+
+  const active: Channel[] =
+    filters.channels.length > 0 ? filters.channels : data.meta.channels;
+  const pivot = pivotByPeriod(data.series);
+
+  return (
+    <div className="flex flex-col gap-6">
+      <TotalsCards totals={data.totals} meta={data.meta} />
+
+      <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+        <h2 className="mb-4 text-sm font-medium text-slate-500 dark:text-slate-400">
+          Taxa de conversão — {active.map((c) => CHANNEL_LABELS[c]).join(', ')}
+        </h2>
+        <ConversionChart data={pivot} channels={active} />
+        <p className="mt-3 text-xs text-slate-400">
+          Um dia sem envio não tem taxa: a linha corta, não cai a zero.
+        </p>
+      </section>
+
+      <SeriesTable series={data.series} />
+    </div>
+  );
+}
+
+function LoadingPanel() {
+  return (
+    <div className="flex h-96 items-center justify-center rounded-xl border border-slate-200 text-slate-400 dark:border-slate-800">
+      Carregando…
+    </div>
+  );
+}
+
+function ErrorPanel({ status }: { status: number }) {
+  return (
+    <div className="flex h-40 flex-col items-center justify-center gap-1 rounded-xl border border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+      <p className="font-medium">Não foi possível carregar os dados.</p>
+      <p className="text-sm">
+        {status === 400
+          ? 'Recorte inválido — ajuste os filtros.'
+          : 'A API não respondeu. Tente novamente.'}
+      </p>
     </div>
   );
 }
