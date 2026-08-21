@@ -11,11 +11,26 @@
   "nav": {
     "ariaLabel": "Navegação principal",
     "items": {
-      "overview": { "label": "Visão geral", "hint": "KPIs, série e tabela" },
-      "channels": { "label": "Por canal", "hint": "Cada canal no seu eixo" },
-      "table": { "label": "Tabela", "hint": "Todos os pontos" },
-      "compare": { "label": "Comparação", "hint": "Dois recortes lado a lado" },
-      "about": { "label": "Sobre os dados", "hint": "O que a série significa" }
+      "overview": {
+        "label": "Visão geral",
+        "hint": "KPIs, série e tabela"
+      },
+      "channels": {
+        "label": "Por canal",
+        "hint": "Cada canal no seu eixo"
+      },
+      "table": {
+        "label": "Tabela",
+        "hint": "Todos os pontos"
+      },
+      "compare": {
+        "label": "Comparação",
+        "hint": "Dois recortes lado a lado"
+      },
+      "about": {
+        "label": "Sobre os dados",
+        "hint": "O que a série significa"
+      }
     }
   },
   "filters": {
@@ -26,9 +41,17 @@
       "week": "Semana",
       "month": "Mês"
     },
-    "channels": { "label": "Canais" },
-    "conversionStatuses": { "label": "Conta como conversão" },
-    "period": { "label": "Período", "from": "De", "to": "Até" }
+    "channels": {
+      "label": "Canais"
+    },
+    "conversionStatuses": {
+      "label": "Conta como conversão"
+    },
+    "period": {
+      "label": "Período",
+      "from": "De",
+      "to": "Até"
+    }
   },
   "channels": {
     "email": "E-mail",
@@ -92,19 +115,23 @@
     "empty": "Nenhum canal no recorte.",
     "kpiSent": "Envios",
     "kpiConverted": "Conversões",
-    "kpiRate": "Taxa"
+    "kpiRate": "Taxa",
+    "viewInTable": "Ver {channel} na tabela"
   },
   "table": {
     "title": "Tabela",
     "subtitle": "Todos os pontos do recorte. Volume ao lado da taxa — a taxa sozinha engana no wpp.",
     "empty": "Nenhum ponto no recorte selecionado.",
-    "pointsCount": "{count, plural, one {# ponto} other {# pontos}}"
+    "pointsCount": "{count, plural, one {# ponto} other {# pontos}}",
+    "exportCsv": "Exportar CSV"
   },
   "compare": {
     "title": "Comparação",
     "subtitle": "Dois conjuntos de status lado a lado. Status 1 dá ~0,30%; somar 5 (Aberto) salta pra ~1,5%.",
     "panelA": "Recorte A",
-    "panelB": "Recorte B"
+    "panelB": "Recorte B",
+    "delta": "Diferença A − B",
+    "loading": "Carregando comparação…"
   },
   "about": {
     "title": "Sobre os dados",
@@ -132,5 +159,11 @@
         "body": "O dump não tem coluna temporal. O created_at é gerado pela posição ordinal do id através de uma curva de sazonalidade — sem random, o mesmo dump gera sempre as mesmas datas."
       }
     }
+  },
+  "pagination": {
+    "prev": "Anterior",
+    "next": "Próxima",
+    "pageOf": "Página {page} de {totalPages}",
+    "showing": "Mostrando {count} de {total} pontos"
   }
 }

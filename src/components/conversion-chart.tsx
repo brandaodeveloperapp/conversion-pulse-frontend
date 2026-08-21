@@ -17,19 +17,21 @@ import { asDate, asPercent, CHANNEL_COLORS, type PivotRow } from '@/lib/format';
 interface Props {
   data: PivotRow[];
   channels: Channel[];
+  /** Lock the Y axis to a shared range so two charts compare honestly. */
+  yDomain?: [number, number];
 }
 
 const percentAxis = (value: number): string =>
   `${(value * 100).toFixed(1)}%`;
 
-export function ConversionChart({ data, channels }: Props) {
+export function ConversionChart({ data, channels, yDomain }: Props) {
   const locale = useLocale();
   const tChannels = useTranslations('channels');
   const tChart = useTranslations('chart');
 
   if (data.length === 0) {
     return (
-      <div className="flex h-80 items-center justify-center rounded-lg border border-dashed border-slate-300 text-slate-500 dark:border-slate-700 dark:text-slate-400">
+      <div className="flex h-80 items-center justify-center rounded-lg border border-dashed border-border-subtle text-text-muted">
         {tChart('empty')}
       </div>
     );
@@ -51,6 +53,8 @@ export function ConversionChart({ data, channels }: Props) {
             tick={{ fontSize: 12 }}
             stroke="#69727d"
             width={56}
+            domain={yDomain ?? [0, 'auto']}
+            allowDataOverflow={yDomain !== undefined}
           />
           <Tooltip
             formatter={(value, name) => [

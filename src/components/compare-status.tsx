@@ -3,6 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useTransition } from 'react';
 import { useTranslations } from 'next-intl';
+import { Chip } from '@/components/ui/chip';
 
 const STATUSES = [1, 2, 4, 5, 6];
 
@@ -43,19 +44,13 @@ export function CompareStatus({
   return (
     <div className="flex flex-wrap gap-1.5">
       {STATUSES.map((status) => (
-        <button
+        <Chip
           key={status}
-          type="button"
-          aria-pressed={selected.includes(status)}
+          active={selected.includes(status)}
           onClick={() => toggle(status)}
-          className={
-            selected.includes(status)
-              ? 'rounded-full bg-primary px-2.5 py-1 text-xs font-medium text-on-primary'
-              : 'rounded-full border border-border-subtle px-2.5 py-1 text-xs text-text-secondary transition-colors hover:border-primary hover:text-text-primary'
-          }
         >
           {tStatus(statusKey(status))}
-        </button>
+        </Chip>
       ))}
     </div>
   );

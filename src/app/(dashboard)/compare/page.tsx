@@ -4,8 +4,8 @@ import { ConversionChart } from '@/components/conversion-chart';
 import { CompareStatus } from '@/components/compare-status';
 import { ErrorPanel, LoadingPanel, PageHeader } from '@/components/panels';
 import { ApiError, fetchTimeseries } from '@/lib/api/client';
-import { parseFilters } from '@/lib/api/filters';
-import { asPercent, pivotByPeriod } from '@/lib/format';
+import { parseFilters, type DashboardFilters } from '@/lib/api/filters';
+import { asPercent, asPointsDelta, maxPivotRate, pivotByPeriod } from '@/lib/format';
 import type { Channel } from '@/lib/api/types';
 
 export const dynamic = 'force-dynamic';
@@ -32,61 +32,38 @@ export default async function ComparePage({
   const a = statuses(params.statusesA, [1]);
   const b = statuses(params.statusesB, [1, 5]);
   const t = await getTranslations('compare');
-  const tPanels = await getTranslations('panels');
 
   return (
     <>
       <PageHeader title={t('title')} subtitle={t('subtitle')} />
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Panel title={t('panelA')} paramKey="statusesA" selected={a}>
-          <Suspense
-            key={`a-${JSON.stringify({ base, a })}`}
-            fallback={<LoadingPanel label={tPanels('loading')} />}
-          >
-            <ChartFor filters={{ ...base, conversionStatuses: a }} />
-          </Suspense>
-        </Panel>
-        <Panel title={t('panelB')} paramKey="statusesB" selected={b}>
-          <Suspense
-            key={`b-${JSON.stringify({ base, b })}`}
-            fallback={<LoadingPanel label={tPanels('loading')} />}
-          >
-            <ChartFor filters={{ ...base, conversionStatuses: b }} />
-          </Suspense>
-        </Panel>
-      </div>
+      {/* No key: keep the prior comparison visible while the server re-fetches. */}
+      <Suspense fallback={<LoadingPanel label={t('loading')} />}>
+        <Comparison base={base} a={a} b={b} />
+      </Suspense>
     </>
   );
 }
 
-function Panel({
-  title,
-  paramKey,
-  selected,
-  children,
+async function Comparison({
+  base,
+  a,
+  b,
 }: {
-  title: string;
-  paramKey: string;
-  selected: number[];
-  children: React.ReactNode;
+  base: DashboardFilters;
+  a: number[];
+  b: number[];
 }) {
-  return (
-    <section className="flex flex-col gap-4 rounded-lg border border-border-subtle bg-surface p-5 shadow-sm">
-      <div className="flex flex-col gap-2">
-        <h2 className="font-display text-sm font-semibold text-text-primary">{title}</h2>
-        <CompareStatus paramKey={paramKey} selected={selected} />
-      </div>
-      {children}
-    </section>
-  );
-}
-
-async function ChartFor({ filters }: { filters: ReturnType<typeof parseFilters> }) {
+  const t = await getTranslations('compare');
   const tPanels = await getTranslations('panels');
   const locale = await getLocale();
-  let data;
+
+  let dataA;
+  let dataB;
   try {
-    data = await fetchTimeseries(filters);
+    [dataA, dataB] = await Promise.all([
+      fetchTimeseries({ ...base, conversionStatuses: a }),
+      fetchTimeseries({ ...base, conversionStatuses: b }),
+    ]);
   } catch (error) {
     return (
       <ErrorPanel
@@ -97,14 +74,109 @@ async function ChartFor({ filters }: { filters: ReturnType<typeof parseFilters> 
       />
     );
   }
-  const active: Channel[] =
-    filters.channels.length > 0 ? filters.channels : data.meta.channels;
+
+  const rateA = dataA.totals.conversionRate;
+  const rateB = dataB.totals.conversionRate;
+  const pivotA = pivotByPeriod(dataA.series);
+  const pivotB = pivotByPeriod(dataB.series);
+
+  // Lock both charts to one Y range so the eye compares heights honestly.
+  const sharedMax = maxPivotRate([...pivotA, ...pivotB]);
+  const yDomain: [number, number] | undefined =
+    sharedMax && sharedMax > 0 ? [0, sharedMax] : undefined;
+
+  const activeA: Channel[] = base.channels.length > 0 ? base.channels : dataA.meta.channels;
+  const activeB: Channel[] = base.channels.length > 0 ? base.channels : dataB.meta.channels;
+
   return (
-    <div className="flex flex-col gap-3">
-      <p className="font-mono text-2xl font-semibold tabular-nums text-primary">
-        {asPercent(data.totals.conversionRate, locale)}
-      </p>
-      <ConversionChart data={pivotByPeriod(data.series)} channels={active} />
+    <div className="flex flex-col gap-4">
+      {/* Delta banner: A, the signed difference, B — the number the eye used to guess */}
+      <section className="grid grid-cols-3 items-center gap-2 rounded-lg border border-border-subtle bg-surface p-4 text-center">
+        <Metric label={t('panelA')} value={asPercent(rateA, locale)} badge="A" />
+        <div className="flex flex-col gap-0.5">
+          <span
+            className="font-display text-[0.62rem] font-semibold uppercase text-text-muted"
+            style={{ letterSpacing: 'var(--tracking-nav)' }}
+          >
+            {t('delta')}
+          </span>
+          <span className="font-mono text-xl font-semibold tabular-nums text-text-primary">
+            {asPointsDelta(rateA, rateB, locale)}
+          </span>
+        </div>
+        <Metric label={t('panelB')} value={asPercent(rateB, locale)} badge="B" />
+      </section>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Panel badge="A" title={t('panelA')} paramKey="statusesA" selected={a}>
+          <ConversionChart data={pivotA} channels={activeA} yDomain={yDomain} />
+        </Panel>
+        <Panel badge="B" title={t('panelB')} paramKey="statusesB" selected={b}>
+          <ConversionChart data={pivotB} channels={activeB} yDomain={yDomain} />
+        </Panel>
+      </div>
     </div>
+  );
+}
+
+function Metric({
+  label,
+  value,
+  badge,
+}: {
+  label: string;
+  value: string;
+  badge: string;
+}) {
+  return (
+    <div className="flex flex-col items-center gap-0.5">
+      <span className="inline-flex items-center gap-1.5">
+        <Badge>{badge}</Badge>
+        <span
+          className="font-display text-[0.62rem] font-semibold uppercase text-text-muted"
+          style={{ letterSpacing: 'var(--tracking-nav)' }}
+        >
+          {label}
+        </span>
+      </span>
+      <span className="font-mono text-xl font-semibold tabular-nums text-primary">
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function Panel({
+  title,
+  badge,
+  paramKey,
+  selected,
+  children,
+}: {
+  title: string;
+  badge: string;
+  paramKey: string;
+  selected: number[];
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="flex flex-col gap-4 rounded-lg border border-border-subtle bg-surface p-5 shadow-sm">
+      <div className="flex flex-col gap-2">
+        <h2 className="inline-flex items-center gap-2 font-display text-sm font-semibold text-text-primary">
+          <Badge>{badge}</Badge>
+          {title}
+        </h2>
+        <CompareStatus paramKey={paramKey} selected={selected} />
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function Badge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary-subtle font-display text-[0.65rem] font-bold text-primary">
+      {children}
+    </span>
   );
 }

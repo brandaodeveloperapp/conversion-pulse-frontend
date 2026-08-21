@@ -5,6 +5,7 @@ import { useCallback, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import { type Channel, type Granularity } from '@/lib/api/types';
 import { parseFilters } from '@/lib/api/filters';
+import { Chip } from '@/components/ui/chip';
 
 const GRANULARITIES: Granularity[] = ['day', 'week', 'month'];
 const CHANNELS: Channel[] = ['email', 'mobile', 'wpp'];
@@ -187,27 +188,3 @@ function Group({
   );
 }
 
-function Chip({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      aria-pressed={active}
-      onClick={onClick}
-      className={
-        active
-          ? 'rounded-full bg-primary px-2.5 py-1 text-xs font-medium text-on-primary'
-          : 'rounded-full border border-border-subtle px-2.5 py-1 text-xs text-text-secondary transition-colors hover:border-primary hover:text-text-primary'
-      }
-    >
-      {children}
-    </button>
-  );
-}

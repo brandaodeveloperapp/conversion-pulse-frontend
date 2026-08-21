@@ -34,9 +34,9 @@ html {
 
   --color-focus-ring: #ff9100;
 
-  --color-chart-email: #f28b04;
-  --color-chart-mobile: #cc3366;
-  --color-chart-wpp: #2dd4bf;
+  /* Channel colors live in src/lib/format.ts (CHANNEL_COLORS): Recharts needs a
+     hex value at the SVG stroke, where var() does not resolve. Keeping them here
+     too would be a second source of truth, so this layer intentionally omits them. */
 
   --font-display: var(--font-sora), "Sora", system-ui, sans-serif;
   --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
@@ -90,10 +90,6 @@ html {
   --color-danger-subtle: var(--color-danger-subtle);
 
   --color-focus-ring: var(--color-focus-ring);
-
-  --color-chart-email: var(--color-chart-email);
-  --color-chart-mobile: var(--color-chart-mobile);
-  --color-chart-wpp: var(--color-chart-wpp);
 
   --font-display: var(--font-display);
   --font-sans: var(--font-sans);

@@ -1,5 +1,13 @@
 export type Granularity = 'day' | 'week' | 'month';
 export type Channel = 'email' | 'mobile' | 'wpp';
+export type SortField =
+  | 'period'
+  | 'channel'
+  | 'sent'
+  | 'converted'
+  | 'delivered'
+  | 'rate';
+export type SortDir = 'asc' | 'desc';
 
 export interface SeriesPoint {
   period: string;
@@ -13,6 +21,13 @@ export interface SeriesPoint {
   openRate: number | null;
 }
 
+export interface Pagination {
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+}
+
 export interface TimeseriesMeta {
   from: string;
   to: string;
@@ -22,6 +37,8 @@ export interface TimeseriesMeta {
   queryMs: number;
   cached: boolean;
   source: string;
+  /** Present only when the request sent a pageSize. */
+  pagination?: Pagination;
 }
 
 export interface TimeseriesTotals {

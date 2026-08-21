@@ -11,11 +11,26 @@
   "nav": {
     "ariaLabel": "Main navigation",
     "items": {
-      "overview": { "label": "Overview", "hint": "KPIs, series and table" },
-      "channels": { "label": "By channel", "hint": "Each channel on its own axis" },
-      "table": { "label": "Table", "hint": "Every point" },
-      "compare": { "label": "Compare", "hint": "Two slices side by side" },
-      "about": { "label": "About the data", "hint": "What the series means" }
+      "overview": {
+        "label": "Overview",
+        "hint": "KPIs, series and table"
+      },
+      "channels": {
+        "label": "By channel",
+        "hint": "Each channel on its own axis"
+      },
+      "table": {
+        "label": "Table",
+        "hint": "Every point"
+      },
+      "compare": {
+        "label": "Compare",
+        "hint": "Two slices side by side"
+      },
+      "about": {
+        "label": "About the data",
+        "hint": "What the series means"
+      }
     }
   },
   "filters": {
@@ -26,9 +41,17 @@
       "week": "Week",
       "month": "Month"
     },
-    "channels": { "label": "Channels" },
-    "conversionStatuses": { "label": "Counts as conversion" },
-    "period": { "label": "Period", "from": "From", "to": "To" }
+    "channels": {
+      "label": "Channels"
+    },
+    "conversionStatuses": {
+      "label": "Counts as conversion"
+    },
+    "period": {
+      "label": "Period",
+      "from": "From",
+      "to": "To"
+    }
   },
   "channels": {
     "email": "Email",
@@ -92,19 +115,23 @@
     "empty": "No channels in this slice.",
     "kpiSent": "Sent",
     "kpiConverted": "Converted",
-    "kpiRate": "Rate"
+    "kpiRate": "Rate",
+    "viewInTable": "View {channel} in the table"
   },
   "table": {
     "title": "Table",
     "subtitle": "Every point in the slice. Volume travels next to the rate — the rate alone is misleading on WhatsApp.",
     "empty": "No points in the selected slice.",
-    "pointsCount": "{count, plural, one {# point} other {# points}}"
+    "pointsCount": "{count, plural, one {# point} other {# points}}",
+    "exportCsv": "Export CSV"
   },
   "compare": {
     "title": "Compare",
     "subtitle": "Two status sets side by side. Status 1 alone yields ~0.30%; adding 5 (Opened) jumps to ~1.5%.",
     "panelA": "Slice A",
-    "panelB": "Slice B"
+    "panelB": "Slice B",
+    "delta": "Difference A − B",
+    "loading": "Loading comparison…"
   },
   "about": {
     "title": "About the data",
@@ -132,5 +159,11 @@
         "body": "The dump has no timestamp column. created_at is generated from the id’s ordinal position through a seasonality curve — no randomness, the same dump always produces the same dates."
       }
     }
+  },
+  "pagination": {
+    "prev": "Previous",
+    "next": "Next",
+    "pageOf": "Page {page} of {totalPages}",
+    "showing": "Showing {count} of {total} points"
   }
 }

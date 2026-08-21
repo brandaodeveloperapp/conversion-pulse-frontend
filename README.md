@@ -28,15 +28,26 @@ sem sair da rede do k3s.
   **corta a linha**, não cai a zero — reflete o `null` que a API devolve para
   denominador zero.
 - **KPIs**: envios, conversões, taxa global e o tempo da consulta (com selo de
-  cache/rollup).
+  cache/rollup). Com um período selecionado, cada KPI mostra a **variação vs o
+  período anterior** de mesmo tamanho (▲ verde / ▼ vermelho).
 - **Tabela** com envios, conversões e entregues ao lado da taxa em cada linha —
   porque a taxa sozinha esconde que o wpp manda milhares contra milhões do
-  email; 100% sobre dois envios não é vitória.
+  email; 100% sobre dois envios não é vitória. **Paginada** (50/página),
+  **ordenável por qualquer coluna** (a ordenação vale sobre a série inteira, não
+  só a página) e com **export CSV** do recorte completo. No mobile a tabela vira
+  cards empilhados — sem scroll horizontal.
+- **Por canal**: um card por canal, ordenado por volume; clicar abre a tabela
+  filtrada naquele canal.
+- **Comparação**: dois recortes de status lado a lado, com a **diferença A−B em
+  pontos percentuais** e os dois gráficos na **mesma escala Y** — comparação
+  honesta, não de olho.
 
 ## Filtros
 
 Granularidade (dia/semana/mês), canais, o que conta como conversão (status) e
-período. O status 3 (Incompleto) não aparece: não existe nos dados.
+período. O status 3 (Incompleto) não aparece: não existe nos dados. Cada filtro
+vive na URL; ao mudar, o servidor re-busca e o conteúdo anterior fica visível
+(escurecido) durante a revalidação — sem flash de loading, sem store client.
 
 ## Rodar
 
@@ -54,7 +65,7 @@ API_BASE_URL=http://localhost:3000 npm run dev
 ## Qualidade
 
 ```bash
-npm test             # 13 testes (parse de filtros, pivô, formatação)
+npm test             # 16 testes (parse de filtros, pivô, formatação)
 npm run build        # build de produção (output standalone)
 ```
 
