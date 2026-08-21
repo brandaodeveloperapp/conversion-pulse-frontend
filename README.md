@@ -3,9 +3,23 @@
 Frontend do desafio Tech Lead da Ilumeo. Dashboard da evolução temporal da taxa
 de conversão por canal, consumindo a
 [API](https://conversion-pulse.brandaodeveloper.com.br) que serve o rollup sobre
-9,5M de envios.
+**9,5M de envios**.
 
-Backend: [`conversion-pulse-backend`](https://github.com/brandaodeveloperapp/conversion-pulse-backend).
+[![CI](https://github.com/brandaodeveloperapp/conversion-pulse-frontend/actions/workflows/ci.yml/badge.svg)](https://github.com/brandaodeveloperapp/conversion-pulse-frontend/actions/workflows/ci.yml)
+[![CD](https://github.com/brandaodeveloperapp/conversion-pulse-frontend/actions/workflows/cd.yml/badge.svg)](https://github.com/brandaodeveloperapp/conversion-pulse-frontend/actions/workflows/cd.yml)
+![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=next.js&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
+![tests](https://img.shields.io/badge/tests-16%20unit%20%2B%2041%20e2e-16a765)
+
+**No ar:** [dashboard](https://conversion-pulse-app.brandaodeveloper.com.br)
+· Backend: [`conversion-pulse-backend`](https://github.com/brandaodeveloperapp/conversion-pulse-backend)
+
+## Índice
+
+1. [Decisão central: busca no servidor](#decisão-central-busca-no-servidor)
+2. [O que a UI mostra](#o-que-a-ui-mostra) — as 5 telas
+3. [Filtros](#filtros)
+4. [Rodar](#rodar) · [Qualidade](#qualidade) · [Stack](#stack)
 
 ## Decisão central: busca no servidor
 
@@ -65,12 +79,23 @@ API_BASE_URL=http://localhost:3000 npm run dev
 ## Qualidade
 
 ```bash
-npm test             # 16 testes (parse de filtros, pivô, formatação)
+npm test             # 16 unit (parse de filtros, pivô, formatação)
+npm run test:e2e     # 41 e2e Playwright (navegação, filtros, KPIs, responsivo)
 npm run build        # build de produção (output standalone)
+npm run lint         # ESLint
 ```
+
+Os unit cobrem a lógica pura (`src/`). Os e2e Playwright rodam as 5 rotas em três
+viewports (desktop/tablet/mobile) contra um servidor real; por padrão apontam
+para a URL pública, `E2E_BASE_URL=http://localhost:3100` mira um build local.
 
 ## Stack
 
 Next.js 16 · React 19 · TypeScript strict · Recharts · Tailwind · Docker
-(standalone) · k3s. Deploy pelo mesmo pipeline do backend: build da imagem,
-`docker save` por SSH, import no containerd, `kubectl apply`.
+(standalone) · k3s.
+
+**Deploy** — mesmo padrão sem registry do backend, com CI/CD próprio: merge em
+`main` → CI (lint · testes · build · docker) → CD cross-builda a imagem, envia
+por SSH, importa no containerd do k3s, aplica o overlay de produção e faz
+rollout do `cpulse-web`, com smoke test e `rollout undo` em caso de falha. Chave
+ed25519 dedicada a este projeto, apagada do runner ao fim de cada job.
