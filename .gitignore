@@ -47,3 +47,7 @@ next-env.d.ts
 # agent tooling artifacts
 .claude/
 .claude-flow/
+
+# next dev agent files (regenerated locally, not project docs)
+AGENTS.md
+CLAUDE.md
